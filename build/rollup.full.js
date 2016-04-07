@@ -31,7 +31,10 @@ export default {
 			exclude: [ "node_modules/**" ],
 			include: [ "src/**" ],
 			presets: [ "es2015-rollup" ],
-			plugins: [ "transform-object-rest-spread" ]
+			plugins: [
+				"transform-object-rest-spread",
+				"lodash"
+			]
 		}),
 
 		nodeGlobals()

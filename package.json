@@ -24,6 +24,7 @@
     "autorelease-travis": "^1.2.1",
     "babel-eslint": "^6.0.2",
     "babel-plugin-external-helpers": "^6.5.0",
+    "babel-plugin-lodash": "^2.2.2",
     "babel-plugin-transform-async-to-generator": "^6.7.4",
     "babel-plugin-transform-es2015-destructuring": "^6.6.5",
     "babel-plugin-transform-es2015-parameters": "^6.7.0",

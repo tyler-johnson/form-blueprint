@@ -22,10 +22,15 @@ dist/browser.min.js: dist/browser.js
 test.js: test/index.js $(TEST)
 	$(BIN)/rollup $< -c build/rollup.node.js > $@
 
-test: test.js
+test: test-node test-browser
+
+test-node: test.js index.js
 	node $<
+
+test-browser: test.js browser.js
+	$(BIN)/browserify $< --debug | $(BIN)/tape-run
 
 clean:
 	rm -rf index.js browser.js test.js dist/
 
-.PHONY: build clean test
+.PHONY: build clean test test-node test-browser

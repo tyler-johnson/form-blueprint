@@ -1,4 +1,4 @@
-import {has,clone,reduce,assignWith} from "lodash";
+import {assign,omit,has,clone,reduce,assignWith} from "lodash";
 
 // throw an error if blueprint is not valid
 export function validate(bp) {
@@ -46,6 +46,7 @@ export function merge(...args) {
 			if (!validSection(section)) continue;
 
 			if (!has(m, section_key)) m[section_key] = { options: {} };
+			assign(m[section_key], omit(section, "options"));
 			let options = section.options;
 
 			for (let option_key in options) {

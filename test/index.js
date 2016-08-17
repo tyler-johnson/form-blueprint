@@ -122,51 +122,63 @@ test("merges blueprints together", function(t) {
 	t.plan(1);
 	t.deepEquals(blueprint.merge({
 		foo: {
+			label: "Foo1",
 			options: {
 				bar: {
 					type: "text",
+					label: "Bar1",
 					default: "foobar"
 				}
 			}
 		},
 		hello: {
+			label: "Foo1",
 			options: {
 				world: {
 					type: "checkbox",
+					label: "World1",
 					default: true
 				}
 			}
 		}
 	}, {
 		foo: {
+			label: "Foo2",
 			options: {
 				bar: {
 					type: "textarea",
+					label: "Bar2",
 					default: "overridden"
 				},
 				baz: {
 					type: "text",
+					label: "Baz1",
 					default: "foobaz"
 				}
 			}
 		}
 	}), {
 		foo: {
+			label: "Foo2",
 			options: {
 				bar: {
 					type: "textarea",
+					label: "Bar2",
 					default: "overridden"
 				},
 				baz: {
 					type: "text",
+					label: "Baz1",
 					default: "foobaz"
 				}
 			}
 		},
 		hello: {
+			label: "Foo1",
 			options: {
 				world: {
 					type: "checkbox",
+					label: "World1",
 					default: true
 				}
 			}

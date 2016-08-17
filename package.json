@@ -1,5 +1,6 @@
 {
   "name": "form-blueprint",
+  "version": "0.0.0-edge",
   "description": "Helpers for validating and handling form blueprint objects.",
   "author": "Tyler Johnson <tyler@tylerjohnson.me>",
   "repository": {

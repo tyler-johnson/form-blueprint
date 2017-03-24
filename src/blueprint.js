@@ -1,5 +1,5 @@
 import { Record } from "immutable";
-import { toPath } from "lodash";
+import toPath from "lodash.topath";
 import Schema from "./schema";
 import Field from "./field";
 

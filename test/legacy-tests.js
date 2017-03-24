@@ -1,11 +1,11 @@
 import test from "tape";
-import {is} from "immutable";
+import {isEqual} from "lodash";
 
-const {normalize} = require("./");
+const {default:createBlueprint} = require("./");
 
 test("validates valid blueprint", function(t) {
 	t.plan(1);
-	t.ok(normalize({
+	t.ok(createBlueprint({
 		some_section: {
 			label: "Some Section",
 			options: {
@@ -22,14 +22,14 @@ test("validates valid blueprint", function(t) {
 test("throws on invalid blueprint", function(t) {
 	t.plan(1);
 	t.throws(function() {
-		normalize(null);
+		createBlueprint(null);
 	}, /expecting object/i);
 });
 
 test("extracts default values from blueprint", function(t) {
 	t.plan(1);
 
-	const blueprint = normalize({
+	const blueprint = createBlueprint({
 		foo: {
 			options: {
 				bar: {
@@ -66,7 +66,7 @@ test("extracts default values from blueprint", function(t) {
 test("applies blueprint default to object", function(t) {
 	t.plan(1);
 
-	const blueprint = normalize({
+	const blueprint = createBlueprint({
 		foo: {
 			options: {
 				bar: {
@@ -105,7 +105,7 @@ test("applies blueprint default to object", function(t) {
 test("joins blueprints together", function(t) {
 	t.plan(1);
 
-	const bp1 = normalize({
+	const bp1 = createBlueprint({
 		foo: {
 			label: "Foo1",
 			options: {
@@ -128,7 +128,7 @@ test("joins blueprints together", function(t) {
 		}
 	});
 
-	const bp2 = normalize({
+	const bp2 = createBlueprint({
 		foo: {
 			label: "Foo2",
 			options: {
@@ -146,7 +146,7 @@ test("joins blueprints together", function(t) {
 		}
 	});
 
-	const result = normalize({
+	const result = createBlueprint({
 		foo: {
 			label: "Foo2",
 			options: {
@@ -174,7 +174,7 @@ test("joins blueprints together", function(t) {
 		}
 	});
 
-	t.ok(is(bp2.join(bp1), result), "joins blueprints");
+	t.ok(isEqual(bp2.join(bp1).toJSON(), result.toJSON()), "joins blueprints");
 });
 
 // OLD TESTS THAT NOW BREAK WITH NEW FUNCTIONALITY

@@ -1,5 +1,5 @@
 import { Record, List } from "immutable";
-import Blueprint from "./blueprint";
+import Field from "./field";
 import rules from "./rules/index";
 
 const DEFAULTS = {
@@ -22,31 +22,31 @@ export default class Schema extends Record(DEFAULTS) {
     return "schema";
   }
 
-  apply(blueprint, prop, ...args) {
+  apply(field, prop, ...args) {
     return this.rules.reduce((b, rule) => {
       if (typeof rule[prop] !== "function") return b;
       if (!rule.match.call(this, b)) return b;
       const res = rule[prop].apply(this, [b].concat(args));
-      return Blueprint.isBlueprint(res) ? res : b;
-    }, blueprint);
+      return Field.isField(res) ? res : b;
+    }, field);
   }
 
-  normalize(blueprint) {
-    blueprint = this.apply(blueprint, "normalize");
-    const options = blueprint.options.map(bp => this.normalize(bp));
-    return blueprint.merge({ options });
+  normalize(field) {
+    field = this.apply(field, "normalize");
+    const children = field.children.map(c => this.normalize(c));
+    return field.merge({ children });
   }
 
-  transform(value, blueprint) {
+  transform(value, field) {
     return this.rules.reduce((val, rule) => {
       if (!rule.transform) return val;
-      if (!rule.match.call(this, blueprint)) return val;
-      return rule.transform.call(this, val, blueprint);
+      if (!rule.match.call(this, field)) return val;
+      return rule.transform.call(this, val, field);
     }, value);
   }
 
-  join(blueprint, ...toJoin) {
-    return toJoin.reduce((m, b) => this.apply(m, "join", b), blueprint);
+  join(field, ...toJoin) {
+    return toJoin.reduce((m, b) => this.apply(m, "join", b), field);
   }
 
   addRule(rule) {

@@ -2,23 +2,23 @@
 
 import { List, Set } from "immutable";
 
-function match(bp) {
-  return bp.type === "section";
+function match(field) {
+  return field.type === "section";
 }
 
-function transform(value, blueprint) {
+function transform(value, field) {
   if (typeof value === "undefined") value = {};
   if (value == null || value.constructor !== Object) return value;
 
   const keys = Object.keys(value);
-  blueprint.options.forEach(o => {
+  field.children.forEach(o => {
     if (o.key && !keys.includes(o.key)) keys.push(o.key);
   });
 
   return keys.reduce((m, k) => {
-    const bp = blueprint.getOption(k);
-    if (!bp) m[k] = value[k];
-    else m[k] = this.transform(value[k], bp);
+    const child = field.getChildField(k);
+    if (!child) m[k] = value[k];
+    else m[k] = this.transform(value[k], child);
     return m;
   }, {});
 }
@@ -26,18 +26,18 @@ function transform(value, blueprint) {
 function join(a, b) {
   if (b.type !== "section") return a;
 
-  const keys = Set(a.options.map(o => o.key))
-    .union(b.options.map(o => o.key));
+  const keys = Set(a.children.map(o => o.key))
+    .union(b.children.map(o => o.key));
 
-  const options = keys.reduce((m, key) => {
-    const aopt = a.getOption(key);
-    const bopt = b.getOption(key);
+  const children = keys.reduce((m, key) => {
+    const aopt = a.getChildField(key);
+    const bopt = b.getChildField(key);
     if (!aopt && !bopt) return m;
     const opt = !aopt ? bopt : !bopt ? aopt : this.join(aopt, bopt);
     return m.push(opt);
   }, List());
 
-  return a.merge({ options });
+  return a.merge({ children });
 }
 
 export default {

@@ -1,46 +1,23 @@
-import { Record, Map, List } from "immutable";
-import Schema, {defaultSchema} from "./schema";
+import { Record } from "immutable";
+import { toPath } from "lodash";
+import Schema from "./schema";
+import Field from "./field";
 
 const DEFAULTS = {
-  key: null,
-  type: null,
-  options: null,
-  props: null
+  root: null,
+  schema: null
 };
 
 export default class Blueprint extends Record(DEFAULTS) {
-  static create(blueprint = {}) {
-    if (Blueprint.isBlueprint(blueprint)) return blueprint;
-
-    if (typeof blueprint !== "object" || blueprint == null) {
-      throw new Error("Expecting object for blueprint.");
+  static create(props = {}) {
+    if (Blueprint.isBlueprint(props)) {
+      return props;
     }
 
-    let {
-      key=null,
-      type=null,
-      options,
-      ...props
-    } = blueprint;
+    props.root = Field.create(props.root);
+    props.schema = Schema.create(props.schema);
 
-    options = Blueprint.createList(options);
-    props = Map.isMap(props) ? props : Map(props);
-
-    return new Blueprint({ key, type, options, props });
-  }
-
-  static createList(blueprints) {
-    if (List.isList(blueprints)) return blueprints;
-
-    if (Array.isArray(blueprints)) {
-      blueprints = blueprints.map(Blueprint.create);
-    } else if (typeof blueprints === "object" && blueprints != null) {
-      blueprints = Object.keys(blueprints).map(key => {
-        return Blueprint.create({ ...blueprints[key], key });
-      });
-    }
-
-    return List(blueprints);
+    return new Blueprint(props).normalize();
   }
 
   static isBlueprint(b) {
@@ -51,24 +28,30 @@ export default class Blueprint extends Record(DEFAULTS) {
     return "blueprint";
   }
 
-  getOption(key) {
-    return this.options.find(o => o.key === key);
-  }
+  getField(key) {
+    const path = toPath(key);
+    let field = this.root;
 
-  transform(value, schema=defaultSchema) {
-    return schema.transform(value, this);
-  }
-
-  normalize(schema=defaultSchema) {
-    return schema.normalize(this);
-  }
-
-  join(schema, ...args) {
-    if (!Schema.isSchema(schema)) {
-      args.unshift(schema);
-      schema = defaultSchema;
+    while (path.length && field) {
+      field = field.getChildField(path.shift());
     }
 
-    return schema.join(this, ...args);
+    return field;
+  }
+
+  transform(value) {
+    return this.schema.transform(value, this.root);
+  }
+
+  normalize() {
+    return this.merge({
+      root: this.schema.normalize(this.root)
+    });
+  }
+
+  join(...blueprints) {
+    const fields = [this].concat(blueprints).map(b => b.root);
+    const root = this.schema.join(...fields);
+    return this.merge({ root });
   }
 }

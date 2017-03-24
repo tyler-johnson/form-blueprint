@@ -1,16 +1,16 @@
 import Blueprint from "./blueprint";
 import Schema, {defaultSchema} from "./schema";
+import Field from "./field";
 import * as rules from "./rules/index";
 
 export {
   Blueprint,
   Schema,
+  Field,
   defaultSchema,
   rules
 };
 
-export function normalize(blueprint, schema=defaultSchema) {
-  blueprint = Blueprint.create(blueprint);
-  schema = Schema.create(schema);
-  return schema.normalize(blueprint);
+export default function(field, schema=defaultSchema) {
+  return Blueprint.create({ root: field, schema });
 }

@@ -1,28 +1,28 @@
 // rule for list composition
 
-import Blueprint from "../blueprint";
+import Field from "../field";
 
-function match(blueprint) {
-  return blueprint.type === "list";
+function match(field) {
+  return field.type === "list";
 }
 
-function normalize(blueprint) {
-  const option = blueprint.props.get("option");
-  if (!option) return blueprint;
+function normalize(field) {
+  const child = field.props.get("field");
+  if (!child) return field;
 
-  return blueprint.merge({
-    options: Blueprint.createList([ option ])
+  return field.merge({
+    children: Field.createList([ child ])
   });
 }
 
-function transform(value, blueprint) {
+function transform(value, field) {
   if (!Array.isArray(value)) return value;
 
-  const option = blueprint.options.first();
-  if (!option) return value;
+  const child = field.children.first();
+  if (!child) return value;
 
   return value.map(v => {
-    return this.transform(v, option);
+    return this.transform(v, child);
   });
 }
 

@@ -1,17 +1,18 @@
 // rule for v1 root objects
 
-import Blueprint from "../blueprint";
+import Field from "../field";
 
-function match(bp) {
-  return !bp.type &&
-    !bp.options.size &&
-    bp.props.size;
+function match(field) {
+  return !field.type &&
+    !field.children.size &&
+    field.props.size;
 }
 
-function normalize(bp) {
-  return Blueprint.create({
+function normalize(field) {
+  return Field.create({
+    key: field.key,
     type: "section",
-    options: bp.props.toJSON()
+    children: field.props.toJSON()
   });
 }
 

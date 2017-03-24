@@ -1,13 +1,18 @@
 // rule for v1 type-less sections
 
-function match(bp) {
-  return !bp.type && bp.options;
+import Field from "../field";
+
+function match(field) {
+  return !field.type && field.props.has("options");
 }
 
-function normalize(bp) {
-  if (bp.type !== "section") {
-    return bp.merge({ type: "section" });
-  }
+function normalize(field) {
+  const opts = field.props.get("options");
+
+  return field.merge({
+    type: "section",
+    children: Field.createList(opts)
+  });
 }
 
 export default {

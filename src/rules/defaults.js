@@ -1,11 +1,11 @@
 // rule for defaults
 
-function match(bp) {
-  return bp.props.has("default");
+function match(field) {
+  return field.props.has("default");
 }
 
-function transform(value, bp) {
-  const def = bp.props.get("default");
+function transform(value, field) {
+  const def = field.props.get("default");
 
   return (typeof def !== "undefined") &&
     (typeof value === "undefined" || value === "") ?

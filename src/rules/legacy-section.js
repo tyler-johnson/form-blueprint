@@ -3,7 +3,7 @@
 import Field from "../field";
 
 function match(field) {
-  return !field.type && field.props.has("options");
+  return (!field.type || field.type === "section") && field.props.has("options");
 }
 
 function normalize(field) {

@@ -1,6 +1,5 @@
 import { Record, List } from "immutable";
 import Field from "./field";
-import rules from "./rules/index";
 
 const DEFAULTS = {
   rules: null
@@ -56,14 +55,13 @@ export default class Schema extends Record(DEFAULTS) {
 
   concat(rules) {
     if (Schema.isSchema(rules)) rules = rules.rules;
+    rules = [].concat(rules).map(resolveRule);
 
     return this.merge({
       rules: this.rules.concat(rules)
     });
   }
 }
-
-export const defaultSchema = Schema.create(rules);
 
 function resolveRule(r = {}) {
   if (typeof r.match !== "function") {

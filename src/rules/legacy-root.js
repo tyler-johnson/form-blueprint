@@ -3,9 +3,7 @@
 import Field from "../field";
 
 function match(field) {
-  return !field.type &&
-    !field.children.size &&
-    field.props.size;
+  return !field.type && !field.children.size;
 }
 
 function normalize(field) {

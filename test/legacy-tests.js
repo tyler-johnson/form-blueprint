@@ -177,6 +177,12 @@ test("joins blueprints together", function(t) {
 	t.ok(isEqual(bp2.join(bp1).toJSON(), result.toJSON()), "joins blueprints");
 });
 
+test("empty blueprint defaults to section", function(t) {
+	t.plan(1);
+	const blueprint = createBlueprint({});
+	t.equals(blueprint.root.type, "section", "has section root");
+});
+
 // OLD TESTS THAT NOW BREAK WITH NEW FUNCTIONALITY
 // test("throws on invalid section in blueprint", function(t) {
 // 	t.plan(1);

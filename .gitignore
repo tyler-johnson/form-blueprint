@@ -1,5 +1,2 @@
 node_modules/
-/index.js
-/browser.js
-/test.js
-dist/
+lib/

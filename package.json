@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/tyler-johnson/form-blueprint.git"
   },
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "lint": "tslint -p tsconfig.json -c tslint.json 'src/**/*.ts'",
     "clean": "shx rm -rf lib docs",

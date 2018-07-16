@@ -19,3 +19,11 @@ after_success:
 branches:
   only:
     - "master"
+deploy:
+  provider: pages
+  local-dir: docs
+  skip-cleanup: true
+  github-token: $GH_TOKEN
+  verbose: true
+  on:
+    branch: master

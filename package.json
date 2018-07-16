@@ -12,7 +12,9 @@
     "lint": "tslint -p tsconfig.json -c tslint.json 'src/**/*.ts'",
     "clean": "shx rm -rf lib",
     "build:full": "npm-run-all clean build",
-    "build": "tsc -p tsconfig.json",
+    "build:typescript": "tsc -p tsconfig.json",
+    "build:docs": "typedoc --out docs src/",
+    "build": "run-p build:typescript build:docs",
     "test:jest": "cross-env NODE_ENV=test jest -i --verbose",
     "test": "npm-run-all lint test:jest",
     "prepare": "npm run build",
@@ -35,6 +37,7 @@
     "shx": "^0.3.2",
     "ts-jest": "^23.0.0",
     "tslint": "^5.10.0",
+    "typedoc": "^0.11.1",
     "typescript": "~2.8.4"
   },
   "keywords": [],

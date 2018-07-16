@@ -10,10 +10,10 @@
   "main": "index.js",
   "scripts": {
     "lint": "tslint -p tsconfig.json -c tslint.json 'src/**/*.ts'",
-    "clean": "shx rm -rf lib",
+    "clean": "shx rm -rf lib docs",
     "build:full": "npm-run-all clean build",
     "build:typescript": "tsc -p tsconfig.json",
-    "build:docs": "typedoc --out docs src/",
+    "build:docs": "typedoc --out docs src/ && shx touch docs/.nojekyll",
     "build": "run-p build:typescript build:docs",
     "test:jest": "cross-env NODE_ENV=test jest -i --verbose",
     "test": "npm-run-all lint test:jest",

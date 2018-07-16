@@ -1,11 +1,4 @@
 module.exports = {
-  // modulePathIgnorePatterns: [
-  //   "<rootDir>/tool/pkggen/template/",
-  //   "/.template/.*"
-  // ],
-  // testPathIgnorePatterns: [
-  //   "/_utils/.*"
-  // ],
   moduleFileExtensions: [
     "ts",
     "tsx",

@@ -1,6 +1,6 @@
 # Form Blueprint
 
-[![npm](https://img.shields.io/npm/v/form-blueprint.svg)](https://www.npmjs.com/package/form-blueprint) [![David](https://img.shields.io/david/tyler-johnson/form-blueprint.svg)](https://david-dm.org/tyler-johnson/form-blueprint) [![Build Status](https://travis-ci.org/tyler-johnson/form-blueprint.svg?branch=master)](https://travis-ci.org/tyler-johnson/form-blueprint)
+[![npm](https://img.shields.io/npm/v/form-blueprint.svg)](https://www.npmjs.com/package/form-blueprint) [![Build Status](https://travis-ci.org/tyler-johnson/form-blueprint.svg?branch=master)](https://travis-ci.org/tyler-johnson/form-blueprint)
 
 Helpers for validating and handling form blueprint objects.
 
@@ -9,68 +9,123 @@ Helpers for validating and handling form blueprint objects.
 Install via NPM:
 
 ```sh
-npm i form-blueprint --save
+npm i form-blueprint
 ```
 
-## Usage
+## Basic Usage
 
 ```js
-import createBlueprint, { Blueprint, Schema, Field, defaultSchema } from "form-blueprint";
+import createBlueprint from "form-blueprint";
+
+const blueprint = createBlueprint({
+  foo: {
+    type: "text",
+    label: "Foo",
+    default: "bar"
+  },
+  numberino: {
+    type: "number",
+    label: "A Number!",
+    default: 123
+  }
+});
+
+const data = blueprint.transform();
+console.log(data); // { foo: "bar", numberino: 123 }
 ```
 
-### createBlueprint()
+## Blueprint Specification
 
-```text
-createBlueprint( blueprint [, schema ] )
+A form blueprint is defined by a schema, which is just a simple JavaScript object. The schema can be very deep, describing both the resulting data structure as well as the elements that make up the HTML form.
+
+In general, we use the YAML format to describe form blueprints. Here is a very simple form blueprint, describing a single input field:
+
+```yaml
+type: text
+label: A Text Field
 ```
 
-Creates a new blueprint object with a schema. If a schema is not provided, the builtin default schema is used.
+### General Properties
 
+All field schemas can have these properties.
 
-### Blueprint#root
+- `key` - The property on the parent this field's data will be set on. In general, this value is determined for you.
+- `type` - The type of the field. Types are listed below in detail. This is the only required property.
+- `label` - The human readable identifier for this field.
+- `description` - A description of the field.
+- `children` - An array of children fields. In general, leave this empty.
+- `default` - A default value to use when the form field is left blank.
 
-```text
-blueprint.root
+### Field Types
+
+These are a few of the common field types supported by form-blueprint.
+
+#### Basic Types
+
+Basic types typically match that of a standard input element. They do not take any special properties.
+
+```yaml
+# text input
+type: text
+label: A Text Field
 ```
 
-The blueprint's root field object.
-
-### Blueprint#schema
-
-```text
-blueprint.schema
+```yaml
+# number input
+type: number
+label: A number field
+default: 10
 ```
 
-The blueprint's schema object.
-
-### Blueprint#getField()
-
-```text
-blueprint.getField( key )
+```yaml
+# checkbox input
+type: checkbox
+label: Enable something?
+default: true
 ```
 
-Get a field in a blueprint by key. The key can be complex to get deep values (eg. `a[0].b.c`).
+#### Section
 
-### Blueprint#transform()
+A higher-order type that composes several fields together and organizes their values into an object.
 
-```text
-blueprint.transform( [ value ] )
+A section accepts one of two different structures. The first being the most regular, using an object with type `"section"`. This will take one special field:
+
+- `options` - An object of keys mapped to more field schemas. Note that this property comes from legacy versions of form-blueprint, and using `children` instead is also acceptable.
+
+```yaml
+type: section
+options:
+  foo:
+    type: text
+    label: Foobar
+  hello:
+    type: checkbox
+    label: say hello?
 ```
 
-Transforms a value according to the blueprint and schema rules. Value does not need to be provided, in which case default values are returned.
+The second form that can be used for sections is much simpler and generally recommended. As long as your resulting data structure does not have a property named `type`, you can skip the outer object and just use the contents of the `options` property. So the example above, would turn into the following in short form:
 
-### Blueprint#normalize()
-
-```text
-blueprint.normalize()
+```yaml
+foo:
+  type: text
+  label: Foobar
+hello:
+  type: checkbox
+  label: say hello?
 ```
 
-Normlaize a blueprint using schema rules. This generally doesn't need to be called as this run when a blueprint is created.
+#### List
 
-### Blueprint#join()
+Another higher-order type that allows the end user to create as many values as needed. This will more or less just repeat a form-blueprint for every time the user clicks the add button and produces and array of values for the result.
 
-```text
-blueprint.join( blueprint1 [, blueprint2 [, ... ] ] )
+This uses the type `"list"` and has one special property:
+
+- `field` - A child form-blueprint schema to repeat N times. This can be any valid type, including sections and even more lists.
+
+```yaml
+type: list
+label: list
+field:
+  type: text
+  label: A Text Field
 ```
-
-Joins one or more blueprints together into a single blueprint. The blueprint that join is called on is considered the master blueprint. The master's schema is used to join and upon conflicts, the master's copy will always win.

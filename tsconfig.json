@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib",
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "preserveSymlinks": true,
+    "strict": true,
+    "strictFunctionTypes": false,
+    "downlevelIteration": true,
+    "jsx": "react",
+    "lib": [
+      "es5", "es6", "es7", "dom",
+      "es2015", "es2016", "es2017", "es2018"
+    ]
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}

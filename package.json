@@ -9,43 +9,40 @@
   },
   "main": "index.js",
   "scripts": {
-    "lint": "eslint src/ test/",
-    "clean": "shx rm -rf index.js test.js",
-    "build": "npm-run-all clean build-lib",
-    "build-lib": "rollup src/index.js -c > index.js",
-    "build-test": "rollup test/index.js -c > test.js",
-    "test": "npm-run-all build-test test-node test-browser",
-    "test-node": "node test.js",
-    "test-browser": "browserify test.js --debug | tape-run",
-    "prepublish": "npm run build",
+    "lint": "tslint -p tsconfig.json -c tslint.json 'src/**/*.ts'",
+    "clean": "shx rm -rf lib",
+    "build:full": "npm-run-all clean build",
+    "build:typescript": "tsc -p tsconfig.json",
+    "build:docs": "typedoc --out docs src/",
+    "build": "run-p build:typescript build:docs",
+    "test:jest": "cross-env NODE_ENV=test jest -i --verbose",
+    "test": "npm-run-all lint test:jest",
+    "prepare": "npm run build",
     "autorelease": "autorelease pre && npm publish && autorelease post"
   },
   "dependencies": {
-    "immutable": "^3.8.1",
+    "@types/lodash.topath": "^4.5.3",
+    "immutable": "^4.0.0-rc.9",
     "lodash.topath": "^4.5.2"
   },
   "devDependencies": {
+    "@types/jest": "^23.1.6",
     "autorelease": "^1.6.0",
     "autorelease-github": "^1.1.1",
     "autorelease-travis": "^1.3.0",
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^7.2.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-es2015-rollup": "^3.0.0",
-    "browserify": "^14.1.0",
-    "eslint": "^4.5.0",
-    "lodash": "^4.17.4",
+    "babel-jest": "^23.4.0",
+    "cross-env": "^5.2.0",
+    "jest": "^23.4.1",
     "npm-run-all": "^4.1.1",
-    "rollup": "^0.49.2",
-    "rollup-plugin-babel": "^3.0.2",
-    "rollup-plugin-json": "^2.3.0",
-    "shx": "^0.2.2",
-    "tape": "^4.8.0",
-    "tape-run": "^3.0.0"
+    "shx": "^0.3.2",
+    "ts-jest": "^23.0.0",
+    "tslint": "^5.10.0",
+    "typedoc": "^0.11.1",
+    "typescript": "~2.8.4"
   },
   "keywords": [],
   "license": "MIT",
   "files": [
-    "index.js"
+    "lib"
   ]
 }

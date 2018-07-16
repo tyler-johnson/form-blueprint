@@ -29,17 +29,22 @@ export class Schema extends Record(DEFAULTS) {
   public static create(props?: SchemaCreate) {
     if (Schema.isSchema(props)) return props;
 
-    let rules: List<Rule>;
+    let rules: Iterable<Rule>;
 
     if (isIterable(props)) {
-      rules = List(props);
+      rules = props;
     } else if (props && isIterable(props.rules)) {
-      rules = List(props.rules);
+      rules = props.rules;
     } else {
-      rules = List();
+      rules = [];
     }
 
-    return new Schema({ rules });
+    let ruleList: List<Rule> = List();
+    for (const rule of rules) {
+      ruleList = ruleList.push(resolveRule(rule));
+    }
+
+    return new Schema({ rules: ruleList });
   }
 
   public static isSchema(b: any): b is Schema {

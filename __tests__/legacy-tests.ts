@@ -179,6 +179,21 @@ describe("legacy tests", () => {
     expect(blueprint.root.type).toBe("section");
   });
 
+  test.only("parses malformed blueprint", () => {
+    const blueprint = createBlueprint({
+      foo: {
+        label: "Foo",
+        options: {
+          type: "text",
+          label: "asdf"
+        }
+      }
+    });
+
+    console.log(blueprint);
+    expect(blueprint).toBeTruthy();
+  });
+
   // OLD TESTS THAT NOW BREAK WITH NEW FUNCTIONALITY
   // test("throws on invalid section in blueprint", function() {
   // 	expect.assertions(1);

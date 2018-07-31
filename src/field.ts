@@ -60,6 +60,11 @@ export class Field extends Record(DEFAULTS) {
       }
     } else if (typeof fields === "object" && fields != null) {
       for (const key of Object.keys(fields)) {
+        // verify that the value is actually an object
+        if (typeof fields[key] !== "object" || fields[key] == null) {
+          continue;
+        }
+
         list = list.push(Field.create({ key, ...fields[key] }));
       }
     }

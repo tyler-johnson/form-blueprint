@@ -1,4 +1,6 @@
 module.exports = {
+  verbose: true,
+  testURL: "http://localhost/",
   moduleFileExtensions: [
     "ts",
     "tsx",

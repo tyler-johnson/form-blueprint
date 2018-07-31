@@ -26,6 +26,15 @@ export interface FieldCreate {
   [key: string]: any;
 }
 
+export interface FieldSerialized {
+  key: string | null;
+  type: string | null;
+  children: FieldSerialized[];
+  props: {
+    [key: string]: any;
+  };
+}
+
 export class Field extends Record(DEFAULTS) {
   public static create(field?: FieldCreate) {
     if (Field.isField(field)) {
@@ -60,6 +69,11 @@ export class Field extends Record(DEFAULTS) {
       }
     } else if (typeof fields === "object" && fields != null) {
       for (const key of Object.keys(fields)) {
+        // verify that the value is actually an object
+        if (typeof fields[key] !== "object" || fields[key] == null) {
+          continue;
+        }
+
         list = list.push(Field.create({ key, ...fields[key] }));
       }
     }
@@ -77,5 +91,14 @@ export class Field extends Record(DEFAULTS) {
 
   public getChildField(key: string) {
     return this.children.find((field) => field.key === key);
+  }
+
+  public serialize(): FieldSerialized {
+    return {
+      key: this.key,
+      type: this.type,
+      children: this.children.map((c) => c.serialize()).toArray(),
+      props: this.props.toObject()
+    };
   }
 }

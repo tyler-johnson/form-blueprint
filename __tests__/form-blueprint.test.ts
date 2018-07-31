@@ -1,6 +1,6 @@
 import createBlueprint from "../src/index";
 
-describe("legacy tests", () => {
+describe("form-blueprint tests", () => {
   test("validates valid blueprint", function() {
     expect.assertions(1);
     expect(createBlueprint({
@@ -179,26 +179,41 @@ describe("legacy tests", () => {
     expect(blueprint.root.type).toBe("section");
   });
 
-  // OLD TESTS THAT NOW BREAK WITH NEW FUNCTIONALITY
-  // test("throws on invalid section in blueprint", function() {
-  // 	expect.assertions(1);
-  // 	t.throws(function() {
-  // 		blueprint.validate({
-  // 			invalid_section: {}
-  // 		});
-  // 	}, /invalid blueprint section/i);
-  // });
-  //
-  // test("throws on invalid section option in blueprint", function() {
-  // 	expect.assertions(1);
-  // 	t.throws(function() {
-  // 		blueprint.validate({
-  // 			section: {
-  // 				options: {
-  // 					foo: {}
-  // 				}
-  // 			}
-  // 		});
-  // 	}, /invalid blueprint option/i);
-  // });
+  test("parses malformed blueprint", () => {
+    const blueprint = createBlueprint({
+      foo: {
+        label: "Foo",
+        options: {
+          type: "text",
+          label: "asdf"
+        }
+      }
+    });
+
+    expect(blueprint).toBeTruthy();
+  });
+
+  test("can create blueprint from serialized blueprint", () => {
+    const blueprint = createBlueprint({
+      foo: {
+        label: "Foo",
+        options: {
+          bar: {
+            type: "textarea",
+            label: "Bar",
+            default: "foobar"
+          },
+          baz: {
+            type: "text",
+            label: "Baz",
+            default: "foobaz"
+          }
+        }
+      }
+    });
+
+    const json = blueprint.serialize();
+    const blueprint2 = createBlueprint(json);
+    expect(blueprint).toEqual(blueprint2);
+  });
 });

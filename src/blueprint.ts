@@ -1,7 +1,7 @@
 import { Record } from "immutable";
 import toPath = require("lodash.topath");
 import { Schema, SchemaCreate } from "./schema";
-import { Field, FieldCreate } from "./field";
+import { Field, FieldCreate, FieldSerialized } from "./field";
 
 export interface BlueprintRecord {
   root: Field;
@@ -91,5 +91,13 @@ export class Blueprint extends Record(DEFAULTS) {
         ...blueprints.map((b) => b.root)
       )
     });
+  }
+
+  /**
+   * Generates a plain object representing the blueprint fields. New blueprints can be created from the serialized
+   * result.
+   */
+  public serialize(): FieldSerialized {
+    return this.root.serialize();
   }
 }

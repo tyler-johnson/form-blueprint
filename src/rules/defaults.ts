@@ -8,10 +8,7 @@ const defaultRule: Rule = {
   },
   transform(value, field) {
     const def = field.props.get("default");
-
-    return (typeof def !== "undefined") &&
-      (typeof value === "undefined" || value === "") ?
-      def : value;
+    return typeof value === "undefined" ? def : value;
   }
 };
 

@@ -23,7 +23,7 @@ export class Blueprint extends Record(DEFAULTS) {
    * Create a new Blueprint from a field and a schema.
    * @param props Object with a root field and a schema.
    */
-  public static create(props?: BlueprintCreate) {
+  static create(props?: BlueprintCreate) {
     if (Blueprint.isBlueprint(props)) {
       return props;
     }
@@ -36,11 +36,11 @@ export class Blueprint extends Record(DEFAULTS) {
     return blueprint.normalize();
   }
 
-  public static isBlueprint(b: any): b is Blueprint {
+  static isBlueprint(b: any): b is Blueprint {
     return Boolean(b && b.kind === "blueprint");
   }
 
-  public get kind() {
+  get kind() {
     return "blueprint";
   }
 
@@ -48,7 +48,7 @@ export class Blueprint extends Record(DEFAULTS) {
    * Get a field in a blueprint by key. The key can be complex to get deep values (eg. `a[0].b.c`).
    * @param key A field key.
    */
-  public getField(key: string) {
+  getField(key: string) {
     const path = toPath(key);
     let field: Field | undefined = this.root;
 
@@ -65,7 +65,7 @@ export class Blueprint extends Record(DEFAULTS) {
    * default values are returned.
    * @param value A value to transform.
    */
-  public transform(value?: any) {
+  transform(value?: any) {
     return this.schema.transform(value, this.root);
   }
 
@@ -73,7 +73,7 @@ export class Blueprint extends Record(DEFAULTS) {
    * Normlaize a blueprint using schema rules. This generally doesn't need to be called as this run when a blueprint is
    * created.
    */
-  public normalize() {
+  normalize() {
     return this.merge({
       root: this.schema.normalize(this.root)
     });
@@ -84,7 +84,7 @@ export class Blueprint extends Record(DEFAULTS) {
    * the master blueprint. The master's schema is used to join and upon conflicts, the master's copy will always win.
    * @param blueprints One or more blueprints to merge into this blueprint.
    */
-  public join(...blueprints: Blueprint[]) {
+  join(...blueprints: Blueprint[]) {
     return this.merge({
       root: this.schema.join(
         this.root,
@@ -97,7 +97,7 @@ export class Blueprint extends Record(DEFAULTS) {
    * Generates a plain object representing the blueprint fields. New blueprints can be created from the serialized
    * result.
    */
-  public serialize(): FieldSerialized {
+  serialize(): FieldSerialized {
     return this.root.serialize();
   }
 }

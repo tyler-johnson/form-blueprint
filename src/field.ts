@@ -36,7 +36,7 @@ export interface FieldSerialized {
 }
 
 export class Field extends Record(DEFAULTS) {
-  public static create(field?: FieldCreate) {
+  static create(field?: FieldCreate) {
     if (Field.isField(field)) {
       return field;
     }
@@ -60,7 +60,7 @@ export class Field extends Record(DEFAULTS) {
     });
   }
 
-  public static createList(fields?: FieldCreateList) {
+  static createList(fields?: FieldCreateList) {
     let list: List<Field> = List();
 
     if (isIterable(fields)) {
@@ -81,19 +81,19 @@ export class Field extends Record(DEFAULTS) {
     return list;
   }
 
-  public static isField(b: any): b is Field {
+  static isField(b: any): b is Field {
     return Boolean(b && b.kind === "field");
   }
 
-  private get kind() {
+  get kind() {
     return "field";
   }
 
-  public getChildField(key: string) {
+  getChildField(key: string) {
     return this.children.find((field) => field.key === key);
   }
 
-  public serialize(): FieldSerialized {
+  serialize(): FieldSerialized {
     return {
       key: this.key,
       type: this.type,

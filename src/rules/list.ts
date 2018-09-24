@@ -18,7 +18,7 @@ const listRule: Rule = {
   transform(value, field) {
     if (!Array.isArray(value)) return value;
 
-    const child = field.children.first();
+    const child = field.children.first(undefined);
     if (!child) return value;
 
     return value.map((v) => {

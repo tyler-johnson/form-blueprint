@@ -26,7 +26,7 @@ export interface SchemaCreateObject {
 export type SchemaCreate = SchemaCreateRules | SchemaCreateObject;
 
 export class Schema extends Record(DEFAULTS) {
-  public static create(props?: SchemaCreate) {
+  static create(props?: SchemaCreate) {
     if (Schema.isSchema(props)) return props;
 
     let rules: Iterable<Rule>;
@@ -47,15 +47,15 @@ export class Schema extends Record(DEFAULTS) {
     return new Schema({ rules: ruleList });
   }
 
-  public static isSchema(b: any): b is Schema {
+  static isSchema(b: any): b is Schema {
     return Boolean(b && b.kind === "schema");
   }
 
-  private get kind() {
+  get kind() {
     return "schema";
   }
 
-  public apply(field: Field, prop: keyof Rule, ...args: any[]) {
+  apply(field: Field, prop: keyof Rule, ...args: any[]) {
     return this.rules.reduce((fieldResult, rule) => {
       const method = rule[prop];
       if (typeof method !== "function") return fieldResult;
@@ -65,14 +65,14 @@ export class Schema extends Record(DEFAULTS) {
     }, field);
   }
 
-  public normalize(field: Field): Field {
+  normalize(field: Field): Field {
     field = this.apply(field, "normalize");
     return field.merge({
       children: field.children.map((c) => this.normalize(c))
     });
   }
 
-  public transform(value: any, field: Field) {
+  transform(value: any, field: Field) {
     return this.rules.reduce((val, rule) => {
       if (!rule.transform) return val;
       if (!rule.match.call(this, field)) return val;
@@ -80,17 +80,17 @@ export class Schema extends Record(DEFAULTS) {
     }, value);
   }
 
-  public join(field: Field, ...toJoin: Field[]) {
+  join(field: Field, ...toJoin: Field[]) {
     return toJoin.reduce((m, b) => this.apply(m, "join", b), field);
   }
 
-  public addRule(rule: Rule) {
+  addRule(rule: Rule) {
     return this.merge({
       rules: this.rules.push(resolveRule(rule))
     });
   }
 
-  public concat(rules: SchemaCreate) {
+  concat(rules: SchemaCreate) {
     const schema = Schema.create(rules);
 
     return this.merge({

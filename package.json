@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@types/jest": "^23.3.2",
+    "@types/node": "^10.11.6",
     "autorelease": "^1.6.0",
     "autorelease-github": "^1.1.1",
     "autorelease-travis": "^1.3.0",

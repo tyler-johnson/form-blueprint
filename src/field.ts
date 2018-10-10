@@ -89,7 +89,7 @@ export class Field extends Record(DEFAULTS) {
     return "field";
   }
 
-  getChildField(key: string) {
+  getChildField(key: string | null) {
     return this.children.find((field) => field.key === key);
   }
 

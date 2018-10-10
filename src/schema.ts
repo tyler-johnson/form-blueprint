@@ -1,12 +1,12 @@
 import { Record, List } from "immutable";
 import { Field } from "./field";
-import { isIterable } from "./utils";
+import { isIterable, warnOnce } from "./utils";
 
 export interface Rule {
-  match: (this: Schema, field: Field) => any;
+  match: (this: Schema, field: Field) => boolean;
   transform?: (this: Schema, value: any, field: Field) => any;
-  normalize?: (this: Schema, field: Field) => any;
-  join?: (this: Schema, field: Field, joinWith: Field) => any;
+  normalize?: (this: Schema, field: Field) => Field;
+  join?: (this: Schema, field: Field, joinWith: Field) => Field;
 }
 
 export interface SchemaRecord {
@@ -55,33 +55,60 @@ export class Schema extends Record(DEFAULTS) {
     return "schema";
   }
 
+  reduce(field: Field, fn: (this: Schema, rule: Rule, field: Field) => Field) {
+    for (const rule of this.rules) {
+      if (rule.match.call(this, field)) {
+        field = fn.call(this, rule, field);
+      }
+    }
+
+    return field;
+  }
+
   apply(field: Field, prop: keyof Rule, ...args: any[]) {
-    return this.rules.reduce((fieldResult, rule) => {
+    warnOnce(
+      "apply() method on form-blueprint schema is deprecated." +
+      " Use Schema#reduce() instead and run methods directly."
+    );
+
+    return this.reduce(field, (rule, f) => {
       const method = rule[prop];
-      if (typeof method !== "function") return fieldResult;
-      if (!rule.match.call(this, fieldResult)) return fieldResult;
-      const res = method.apply(this, [fieldResult].concat(args));
-      return Field.isField(res) ? res : fieldResult;
-    }, field);
+      if (typeof method !== "function") return f;
+      const res = method.apply(this, [ f, ...args ]);
+      return Field.isField(res) ? res : f;
+    });
   }
 
   normalize(field: Field): Field {
-    field = this.apply(field, "normalize");
+    field = this.reduce(field, (rule, f) => {
+      return rule.normalize ? rule.normalize.call(this, f) : f;
+    });
+
     return field.merge({
       children: field.children.map((c) => this.normalize(c))
     });
   }
 
   transform(value: any, field: Field) {
-    return this.rules.reduce((val, rule) => {
-      if (!rule.transform) return val;
-      if (!rule.match.call(this, field)) return val;
-      return rule.transform.call(this, val, field);
-    }, value);
+    this.reduce(field, (rule, f) => {
+      if (rule.transform) {
+        value = rule.transform.call(this, value, f);
+      }
+
+      return f;
+    });
+
+    return value;
   }
 
   join(field: Field, ...toJoin: Field[]) {
-    return toJoin.reduce((m, b) => this.apply(m, "join", b), field);
+    for (const join of toJoin) {
+      field = this.reduce(field, (rule, f) => {
+        return rule.join ? rule.join.call(this, f, join) : f;
+      });
+    }
+
+    return field;
   }
 
   addRule(rule: Rule) {
@@ -91,10 +118,14 @@ export class Schema extends Record(DEFAULTS) {
   }
 
   concat(rules: SchemaCreate) {
-    const schema = Schema.create(rules);
+    let newRules = this.rules;
+
+    for (const rule of Schema.create(rules).rules) {
+      if (!newRules.includes(rule)) newRules = newRules.push(rule);
+    }
 
     return this.merge({
-      rules: this.rules.concat(schema.rules)
+      rules: newRules
     });
   }
 }

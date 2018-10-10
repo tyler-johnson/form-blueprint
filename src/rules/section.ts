@@ -1,10 +1,10 @@
 // rule for section composition
 
-import { List, Set } from "immutable";
+import { List } from "immutable";
 import { Rule } from "../schema";
 import { Field } from "../field";
 
-function isPlainObject(o: any): o is {} {
+function isPlainObject(o: any): o is { [key: string]: any; } {
   return o != null && o.constructor === Object;
 }
 
@@ -16,32 +16,40 @@ const sectionRule: Rule = {
     if (typeof value === "undefined") value = {};
     if (!isPlainObject(value)) return value;
 
-    const keys = Object.keys(value);
-    field.children.forEach((o) => {
-      if (o.key && !keys.includes(o.key)) keys.push(o.key);
-    });
+    const result: { [key: string]: any; } = {};
+    const keys: string[] = Object.keys(value); // one list for order
+    const uniqKeys = new Set<string>(keys);    // another list for uniqueness
 
-    return keys.reduce((m, k) => {
-      const child = field.getChildField(k);
-      if (!child) m[k] = value[k];
-      else m[k] = this.transform(value[k], child);
-      return m;
-    }, {} as { [key: string]: any; });
+    for (const child of field.children) {
+      if (child.key && !uniqKeys.has(child.key)) {
+        keys.push(child.key);
+        uniqKeys.add(child.key);
+      }
+    }
+
+    for (const key of keys) {
+      const child = field.getChildField(key);
+      if (!child) result[key] = value[key];
+      else result[key] = this.transform(value[key], child);
+    }
+
+    return result;
   },
   join(a, b) {
     if (b.type !== "section") return a;
 
-    const keys = Set(a.children.map((o) => o.key))
-      .union(b.children.map((o) => o.key));
+    const keys = new Set<string | null>();
+    let children = List<Field>();
 
-    const children = keys.reduce((m, key) => {
-      if (!key) return m;
+    for (const { key } of a.children.concat(b.children)) {
+      if (keys.has(key)) continue;
+      keys.add(key);
+
       const aopt = a.getChildField(key);
       const bopt = b.getChildField(key);
-      if (!aopt && !bopt) return m;
       const opt = !aopt ? bopt : !bopt ? aopt : this.join(aopt, bopt);
-      return m.push(opt);
-    }, List());
+      if (opt) children = children.push(opt);
+    }
 
     return a.merge({ children });
   }

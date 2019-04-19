@@ -14,7 +14,7 @@ export interface SchemaRecord {
 }
 
 const DEFAULTS: SchemaRecord = {
-  rules: List()
+  rules: List(),
 };
 
 export type SchemaCreateRules = Iterable<Rule>;
@@ -68,13 +68,13 @@ export class Schema extends Record(DEFAULTS) {
   apply(field: Field, prop: keyof Rule, ...args: any[]) {
     warnOnce(
       "apply() method on form-blueprint schema is deprecated." +
-      " Use Schema#reduce() instead and run methods directly."
+        " Use Schema#reduce() instead and run methods directly."
     );
 
     return this.reduce(field, (rule, f) => {
       const method = rule[prop];
       if (typeof method !== "function") return f;
-      const res = method.apply(this, [ f, ...args ]);
+      const res = (method as any).apply(this, [f, ...args]);
       return Field.isField(res) ? res : f;
     });
   }
@@ -85,7 +85,7 @@ export class Schema extends Record(DEFAULTS) {
     });
 
     return field.merge({
-      children: field.children.map((c) => this.normalize(c))
+      children: field.children.map((c) => this.normalize(c)),
     });
   }
 
@@ -113,7 +113,7 @@ export class Schema extends Record(DEFAULTS) {
 
   addRule(rule: Rule) {
     return this.merge({
-      rules: this.rules.push(resolveRule(rule))
+      rules: this.rules.push(resolveRule(rule)),
     });
   }
 
@@ -125,7 +125,7 @@ export class Schema extends Record(DEFAULTS) {
     }
 
     return this.merge({
-      rules: newRules
+      rules: newRules,
     });
   }
 }

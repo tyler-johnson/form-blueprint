@@ -1,6 +1,6 @@
 import { Blueprint } from "./blueprint";
-import { Schema, Rule, SchemaCreate } from "./schema";
-import { Field, FieldCreate } from "./field";
+import { Schema, SchemaCreate } from "./schema";
+import { FieldCreate } from "./field";
 
 import legacySection from "./rules/legacy-section";
 import legacyRoot from "./rules/legacy-root";
@@ -12,24 +12,15 @@ export * from "./blueprint";
 export * from "./schema";
 export * from "./field";
 
-export const rules = [
-  legacySection,
-  legacyRoot,
-  section,
-  list,
-  defaults
-];
+export const rules = [defaults, legacySection, legacyRoot, section, list];
 
-export {
-  legacySection,
-  legacyRoot,
-  section,
-  list,
-  defaults
-};
+export { legacySection, legacyRoot, section, list, defaults };
 
 export const defaultSchema = Schema.create(rules);
 
-export default function createBlueprint(root?: FieldCreate, schema: SchemaCreate = defaultSchema) {
+export default function createBlueprint(
+  root?: FieldCreate,
+  schema: SchemaCreate = defaultSchema
+) {
   return Blueprint.create({ root, schema });
 }

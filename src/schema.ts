@@ -1,6 +1,6 @@
 import { Record, List } from "immutable";
 import { Field } from "./field";
-import { isIterable, warnOnce } from "./utils";
+import { isIterable } from "./utils";
 
 export interface Rule {
   match: (this: Schema, field: Field) => boolean;
@@ -63,20 +63,6 @@ export class Schema extends Record(DEFAULTS) {
     }
 
     return field;
-  }
-
-  apply(field: Field, prop: keyof Rule, ...args: any[]) {
-    warnOnce(
-      "apply() method on form-blueprint schema is deprecated." +
-        " Use Schema#reduce() instead and run methods directly."
-    );
-
-    return this.reduce(field, (rule, f) => {
-      const method = rule[prop];
-      if (typeof method !== "function") return f;
-      const res = (method as any).apply(this, [f, ...args]);
-      return Field.isField(res) ? res : f;
-    });
   }
 
   normalize(field: Field): Field {

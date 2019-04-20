@@ -1,4 +1,4 @@
 breaking:
-  - Set the defaults rule as the first rule so that its transform runs before the others. This is important so that other rule transforms have a chance to operate on the user selected default.
+features:
+fixes:
 chores:
-  - Removed the deprecated method `Schema#apply()`.

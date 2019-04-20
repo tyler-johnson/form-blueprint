@@ -1,6 +1,6 @@
 import { Record, List } from "immutable";
 import { Field } from "./field";
-import { isIterable, warnOnce } from "./utils";
+import { isIterable } from "./utils";
 
 export interface Rule {
   match: (this: Schema, field: Field) => boolean;
@@ -14,7 +14,7 @@ export interface SchemaRecord {
 }
 
 const DEFAULTS: SchemaRecord = {
-  rules: List()
+  rules: List(),
 };
 
 export type SchemaCreateRules = Iterable<Rule>;
@@ -65,27 +65,13 @@ export class Schema extends Record(DEFAULTS) {
     return field;
   }
 
-  apply(field: Field, prop: keyof Rule, ...args: any[]) {
-    warnOnce(
-      "apply() method on form-blueprint schema is deprecated." +
-      " Use Schema#reduce() instead and run methods directly."
-    );
-
-    return this.reduce(field, (rule, f) => {
-      const method = rule[prop];
-      if (typeof method !== "function") return f;
-      const res = method.apply(this, [ f, ...args ]);
-      return Field.isField(res) ? res : f;
-    });
-  }
-
   normalize(field: Field): Field {
     field = this.reduce(field, (rule, f) => {
       return rule.normalize ? rule.normalize.call(this, f) : f;
     });
 
     return field.merge({
-      children: field.children.map((c) => this.normalize(c))
+      children: field.children.map((c) => this.normalize(c)),
     });
   }
 
@@ -113,7 +99,7 @@ export class Schema extends Record(DEFAULTS) {
 
   addRule(rule: Rule) {
     return this.merge({
-      rules: this.rules.push(resolveRule(rule))
+      rules: this.rules.push(resolveRule(rule)),
     });
   }
 
@@ -125,7 +111,7 @@ export class Schema extends Record(DEFAULTS) {
     }
 
     return this.merge({
-      rules: newRules
+      rules: newRules,
     });
   }
 }

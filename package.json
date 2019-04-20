@@ -1,6 +1,6 @@
 {
   "name": "form-blueprint",
-  "version": "0.0.0-edge",
+  "version": "0.0.0",
   "description": "Helpers for validating and handling form blueprint objects.",
   "author": "Tyler Johnson <tyler@tylerjohnson.me>",
   "repository": {
@@ -10,36 +10,39 @@
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
-    "lint": "tslint -p tsconfig.json -c tslint.json 'src/**/*.ts'",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "clean": "shx rm -rf lib docs",
     "build:full": "npm-run-all clean build",
-    "build:typescript": "tsc -p tsconfig.json",
+    "build:typescript": "tsc -p tsconfig.build.json",
     "build:docs": "typedoc --out docs src/ && shx touch docs/.nojekyll",
     "build": "run-p build:typescript build:docs",
     "test:jest": "cross-env NODE_ENV=test jest -i --verbose",
     "test": "npm-run-all lint test:jest",
-    "prepare": "npm run build",
-    "autorelease": "autorelease pre && npm publish && autorelease post"
+    "prepare": "npm-run-all build",
+    "autorelease": "pagedip-autorelease"
   },
   "dependencies": {
     "@types/lodash.topath": "^4.5.4",
     "immutable": "^4.0.0-rc.10",
-    "lodash.topath": "^4.5.2"
+    "lodash.topath": "^4.5.2",
+    "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.5",
-    "@types/node": "^10.11.7",
-    "autorelease": "^1.6.0",
-    "autorelease-github": "^1.1.1",
-    "autorelease-travis": "^1.3.0",
-    "babel-jest": "^23.6.0",
+    "@pagedip/tool-autorelease": "^3.5.4",
+    "@types/jest": "^24.0.11",
+    "@types/node": "^11.13.6",
+    "@typescript-eslint/eslint-plugin": "^1.6.0",
+    "@typescript-eslint/parser": "^1.6.0",
     "cross-env": "^5.2.0",
-    "jest": "^23.6.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-no-unsanitized": "^3.0.2",
+    "eslint-plugin-prettier": "^3.0.1",
+    "jest": "^24.0.0",
     "npm-run-all": "^4.1.1",
     "shx": "^0.3.2",
-    "ts-jest": "^23.10.4",
-    "tslint": "^5.11.0",
-    "typedoc": "^0.11.1",
+    "ts-jest": "^24.0.2",
+    "typedoc": "^0.14.2",
     "typescript": "^3.1.2"
   },
   "keywords": [],

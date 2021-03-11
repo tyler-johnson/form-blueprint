@@ -38,9 +38,9 @@ cache:
   yarn: true
 deploy:
   provider: pages
-  local-dir: docs
-  skip-cleanup: true
-  github-token: $GH_TOKEN
+  local_dir: docs
+  skip_cleanup: true
+  github_token: $GH_TOKEN
   verbose: true
   on:
     branch: master

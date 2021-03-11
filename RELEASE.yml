@@ -6,6 +6,7 @@ breaking:
 - Renamed `Field.getChildField()` to `Field.findChildByKey()`.
 - Fields `key` and `type` are no longer typed as `string | null` and are now `string | undefined`.
 - "`Schema.normalize()` no longer runs recursively on children fields, however the new rule 'children' does."
+- The arguments for `transform()` have been flipped, it is now `transform(field, value)`.
 features:
 - The `serialize()` method will no longer output empty properties.
 - "Added new rules: children, color, and values"

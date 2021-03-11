@@ -1,14 +1,4 @@
 breaking:
-- Changed `join()` method to combine children and props on fields of the same key and type, unlike the previous which generally would overwrite. The exception to this is fields matching the list and values rules, which overwrite children completely.
-- "Additionally, `join()` also now works like `Object.assign()`. Items are merged left-to-right, with the right-most item replacing data in the items left of it. The same applies to rules implementing a custom `join()`; the 2nd argument should replace the 1st."
-- Both fields given to a rule's custom `join()` are guaranteed to match the rule and have the same key.
-- The first rule's custom `join()` to return a field is used and the remaining rules are ignored.
-- Renamed `Field.getChildField()` to `Field.findChildByKey()`.
-- Fields `key` and `type` are no longer typed as `string | null` and are now `string | undefined`.
-- "`Schema.normalize()` no longer runs recursively on children fields, however the new rule 'children' does."
-- The arguments for `transform()` have been flipped, it is now `transform(field, value)`.
 features:
-- The `serialize()` method will no longer output empty properties.
-- "Added new rules: children, color, and values"
 fixes:
 chores:

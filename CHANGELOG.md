@@ -1,3 +1,53 @@
+## [6.0.0](https://github.com/tyler-johnson/form-blueprint/tree/release/2/) - Mar 11, 2021
+
+### Breaking
+- Changed `join()` method to combine children and props on fields of the same key and type, unlike the previous which generally would overwrite. The exception to this is fields matching the list and values rules, which overwrite children completely.
+- Additionally, `join()` also now works like `Object.assign()`. Items are merged left-to-right, with the right-most item replacing data in the items left of it. The same applies to rules implementing a custom `join()`; the 2nd argument should replace the 1st.
+- Both fields given to a rule's custom `join()` are guaranteed to match the rule and have the same key.
+- The first rule's custom `join()` to return a field is used and the remaining rules are ignored.
+- Renamed `Field.getChildField()` to `Field.findChildByKey()`.
+- Fields `key` and `type` are no longer typed as `string | null` and are now `string | undefined`.
+- `Schema.normalize()` no longer runs recursively on children fields, however the new rule 'children' does.
+- The arguments for `transform()` have been flipped, it is now `transform(field, value)`.
+
+### Features
+- The `serialize()` method will no longer output empty properties.
+- Added new rules: children, color, and values
+
+### Dependencies
+- @types/color: none → `^3.0.1`
+- @types/lodash.topath: `^4.5.4` → `^4.5.6`
+- color: none → `^3.1.3`
+- immutable: `^4.0.0-rc.10` → `^4.0.0-rc.12`
+- tslib: `^1.9.3` → `^2.1.0`
+- @babel/core: none → `^7.13.10`
+- @babel/eslint-parser: none → `^7.13.10`
+- @pagedip/tool-autorelease: `^3.5.4` → `^3.9.2`
+- @types/jest: `^24.0.11` → `^26.0.20`
+- @types/node: `^11.13.6` → `^14.14.33`
+- @typescript-eslint/eslint-plugin: `^1.6.0` → `^4.17.0`
+- @typescript-eslint/parser: `^1.6.0` → `^4.17.0`
+- cross-env: `^5.2.0` → `^7.0.3`
+- eslint: `^5.16.0` → `^7.21.0`
+- eslint-config-prettier: `^4.1.0` → `^8.1.0`
+- eslint-plugin-no-unsanitized: `^3.0.2` → `^3.1.4`
+- eslint-plugin-prettier: `^3.0.1` → `^3.3.1`
+- jest: `^24.0.0` → `^26.6.3`
+- prettier: none → `^2.2.1`
+- shx: `^0.3.2` → `^0.3.3`
+- ts-jest: `^24.0.2` → `^26.5.3`
+- typedoc: `^0.14.2` → `^0.20.30`
+- typescript: `^3.1.2` → `^4.2.3`
+
+### Commits
+[`9d341e34..855a6ada`](https://github.com/tyler-johnson/form-blueprint/compare/9d341e3496a417c79241d7b34e86d08efb6c02c9..855a6ada9d93f4d43fa2384f48210a9a9a0b7657)
+- [`855a6ada`](https://github.com/tyler-johnson/form-blueprint/commit/855a6ada9d93f4d43fa2384f48210a9a9a0b7657) Merge pull request #19 from tyler-johnson/dev
+- [`3fda191f`](https://github.com/tyler-johnson/form-blueprint/commit/3fda191fc59eeb6fc9a72f59aea63e8e55bf51a1) update release
+- [`a7bf1398`](https://github.com/tyler-johnson/form-blueprint/commit/a7bf1398ffa91bc0db31c231a271942d107566d5) update travis config
+- [`a3f50207`](https://github.com/tyler-johnson/form-blueprint/commit/a3f5020717afd2cf07b4cc31356ab7d1a0b695b4) update lockfile
+- [`3bd6a894`](https://github.com/tyler-johnson/form-blueprint/commit/3bd6a894eeb81c1ed32bb3e179b4e76dd9265225) added actual blueprint merging and added some new rules
+
+
 ## [5.0.0](https://github.com/tyler-johnson/form-blueprint/tree/release/1/) - Apr 20, 2019
 
 ### Breaking

@@ -1,12 +1,12 @@
-import { Record, List } from "immutable";
-import { Field } from "./field";
-import { isIterable } from "./utils";
+import { List, Record } from "immutable";
+import { Field, FieldCreate } from "./field";
+import { isIterable, isNullOrEqual } from "./utils";
 
 export interface Rule {
   match: (this: Schema, field: Field) => boolean;
-  transform?: (this: Schema, value: any, field: Field) => any;
-  normalize?: (this: Schema, field: Field) => Field;
-  join?: (this: Schema, field: Field, joinWith: Field) => Field;
+  transform?: (this: Schema, field: Field, value: any) => any;
+  normalize?: (this: Schema, field: Field) => FieldCreate;
+  join?: (this: Schema, field: Field, merge: Field) => FieldCreate | void;
 }
 
 export interface SchemaRecord {
@@ -47,71 +47,92 @@ export class Schema extends Record(DEFAULTS) {
     return new Schema({ rules: ruleList });
   }
 
+  static defaultJoin(schema: Schema, field: Field, mergeIn: Field) {
+    // must match type
+    if (!isNullOrEqual(field.type, mergeIn.type)) {
+      return mergeIn;
+    }
+
+    return field.merge({
+      type: mergeIn.type ?? field.type,
+      props: field.props.merge(mergeIn.props),
+      children: Field.mergeChildren(schema.join.bind(schema), field.children, mergeIn.children),
+    });
+  }
+
   static isSchema(b: any): b is Schema {
-    return Boolean(b && b.kind === "schema");
+    return b != null && b.__form_blueprint_schema__ === true;
+  }
+
+  private get __form_blueprint_schema__() {
+    return true;
   }
 
   get kind() {
     return "schema";
   }
 
-  reduce(field: Field, fn: (this: Schema, rule: Rule, field: Field) => Field) {
+  reduce<T>(fn: (memo: T, rule: Rule) => T, initial: T): T;
+  reduce<T>(fn: (memo: T | undefined, rule: Rule) => T | undefined, initial?: T): T | undefined;
+  reduce<T>(fn: (memo: T | undefined, rule: Rule) => T | undefined, initial?: T) {
+    let memo = initial;
+
     for (const rule of this.rules) {
-      if (rule.match.call(this, field)) {
-        field = fn.call(this, rule, field);
-      }
+      memo = fn(memo, rule);
     }
 
-    return field;
+    return memo;
   }
 
   normalize(field: Field): Field {
-    field = this.reduce(field, (rule, f) => {
-      return rule.normalize ? rule.normalize.call(this, f) : f;
-    });
-
-    return field.merge({
-      children: field.children.map((c) => this.normalize(c)),
-    });
+    return this.reduce((memo, rule) => {
+      if (rule.normalize && rule.match.call(this, memo)) {
+        return Field.create(rule.normalize.call(this, memo));
+      } else {
+        return memo;
+      }
+    }, field);
   }
 
-  transform(value: any, field: Field) {
-    this.reduce(field, (rule, f) => {
-      if (rule.transform) {
-        value = rule.transform.call(this, value, f);
+  transform(field: Field, value?: any) {
+    return this.reduce((memo, rule) => {
+      if (rule.transform && rule.match.call(this, field)) {
+        return rule.transform.call(this, field, memo);
+      } else {
+        return memo;
+      }
+    }, value);
+  }
+
+  join(root: Field, ...mergeIn: Field[]) {
+    let result = root;
+
+    for (const field of mergeIn) {
+      // keys must match, null keys can be joined together
+      if (!isNullOrEqual(result.key, field.key)) {
+        result = field;
+        continue;
       }
 
-      return f;
-    });
-
-    return value;
-  }
-
-  join(field: Field, ...toJoin: Field[]) {
-    for (const join of toJoin) {
-      field = this.reduce(field, (rule, f) => {
-        return rule.join ? rule.join.call(this, f, join) : f;
+      // first rule join to return a field is used and rest of rules are ignored
+      const joined = this.reduce<FieldCreate | void>((memo, rule) => {
+        if (memo == null && rule.join && rule.match.call(this, result) && rule.match.call(this, field)) {
+          return rule.join.call(this, result, field);
+        } else {
+          return memo;
+        }
       });
+
+      // set result or use the default joiner
+      result = joined != null ? Field.create(joined) : Schema.defaultJoin(this, result, field);
     }
 
-    return field;
+    return this.normalize(result);
   }
 
   addRule(rule: Rule) {
     return this.merge({
       rules: this.rules.push(resolveRule(rule)),
-    });
-  }
-
-  concat(rules: SchemaCreate) {
-    let newRules = this.rules;
-
-    for (const rule of Schema.create(rules).rules) {
-      if (!newRules.includes(rule)) newRules = newRules.push(rule);
-    }
-
-    return this.merge({
-      rules: newRules,
     });
   }
 }

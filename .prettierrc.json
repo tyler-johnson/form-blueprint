@@ -8,5 +8,13 @@
   "jsxSingleQuote": false,
   "bracketSpacing": true,
   "jsxBracketSameLine": false,
-  "arrowParens": "always"
+  "arrowParens": "always",
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.graphql"],
+      "options": {
+        "printWidth": 120
+      }
+    }
+  ]
 }

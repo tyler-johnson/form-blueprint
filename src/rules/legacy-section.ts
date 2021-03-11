@@ -12,9 +12,10 @@ const legacySection: Rule = {
 
     return field.merge({
       type: "section",
-      children: Field.createList(opts)
+      children: Field.createList(opts),
+      props: field.props.delete("options"),
     });
-  }
+  },
 };
 
 export default legacySection;

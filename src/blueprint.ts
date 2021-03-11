@@ -1,5 +1,5 @@
 import { Record } from "immutable";
-import toPath = require("lodash.topath");
+import toPath from "lodash.topath";
 import { Schema, SchemaCreate } from "./schema";
 import { Field, FieldCreate, FieldSerialized } from "./field";
 
@@ -10,7 +10,7 @@ export interface BlueprintRecord {
 
 const DEFAULTS = {
   root: new Field(),
-  schema: new Schema()
+  schema: new Schema(),
 };
 
 export interface BlueprintCreate {
@@ -29,15 +29,19 @@ export class Blueprint extends Record(DEFAULTS) {
     }
 
     const blueprint = new Blueprint({
-      root: Field.create(props && props.root),
-      schema: Schema.create(props && props.schema)
+      root: Field.create(props?.root),
+      schema: Schema.create(props?.schema),
     });
 
     return blueprint.normalize();
   }
 
   static isBlueprint(b: any): b is Blueprint {
-    return Boolean(b && b.kind === "blueprint");
+    return b != null && b.__form_blueprint__ === true;
+  }
+
+  private get __form_blueprint__() {
+    return true;
   }
 
   get kind() {
@@ -54,7 +58,7 @@ export class Blueprint extends Record(DEFAULTS) {
 
     for (const part of path) {
       if (!field) return;
-      field = field.getChildField(part);
+      field = field.findChildByKey(part);
     }
 
     return field;
@@ -66,30 +70,26 @@ export class Blueprint extends Record(DEFAULTS) {
    * @param value A value to transform.
    */
   transform(value?: any) {
-    return this.schema.transform(value, this.root);
+    return this.schema.transform(this.root, value);
   }
 
   /**
-   * Normlaize a blueprint using schema rules. This generally doesn't need to be called as this run when a blueprint is
-   * created.
+   * Normalize the blueprint's root field
    */
   normalize() {
     return this.merge({
-      root: this.schema.normalize(this.root)
+      root: this.schema.normalize(this.root),
     });
   }
 
   /**
-   * Joins one or more blueprints together into a single blueprint. The blueprint that join is called on is considered
-   * the master blueprint. The master's schema is used to join and upon conflicts, the master's copy will always win.
-   * @param blueprints One or more blueprints to merge into this blueprint.
+   * Merges blueprints' root fields into this one and returns a new blueprint. Blueprint root fields are merged
+   * left-to-right, with the right-most blueprint replacing data in those left of it. The blueprints schemas are left
+   * untouched, and the schema of the blueprint that join is called on is used to perform the join.
    */
   join(...blueprints: Blueprint[]) {
     return this.merge({
-      root: this.schema.join(
-        this.root,
-        ...blueprints.map((b) => b.root)
-      )
+      root: this.schema.join(this.root, ...blueprints.map((b) => b.root)),
     });
   }
 

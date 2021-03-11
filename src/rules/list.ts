@@ -12,19 +12,26 @@ const listRule: Rule = {
     if (!child) return field;
 
     return field.merge({
-      children: Field.createList([ child ])
+      children: Field.createList([child]),
     });
   },
-  transform(value, field) {
+  transform(field, value) {
     if (!Array.isArray(value)) return value;
 
     const child = field.children.first(undefined);
     if (!child) return value;
 
     return value.map((v) => {
-      return this.transform(v, child);
+      return this.transform(child, v);
     });
-  }
+  },
+  join(field, mergeIn) {
+    return field.merge({
+      props: field.props.merge(mergeIn.props),
+      // remove children completely, normalize() will fix it
+      children: field.children.clear(),
+    });
+  },
 };
 
 export default listRule;

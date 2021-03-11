@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2017",
     "module": "commonjs",
     "importHelpers": true,
     "declaration": true,
-    "preserveSymlinks": true,
     "strict": true,
     "downlevelIteration": true,
     "esModuleInterop": true,
@@ -12,6 +11,6 @@
     "inlineSources": true,
     "jsx": "react",
     "types": ["node", "jest"],
-    "lib": ["es2018", "dom"]
+    "lib": ["esnext", "dom"]
   }
 }

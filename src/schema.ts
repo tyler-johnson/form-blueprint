@@ -108,11 +108,14 @@ export class Schema extends Record(DEFAULTS) {
     let result = root;
 
     for (const field of mergeIn) {
-      // keys must match, null keys can be joined together
+      // keys must match or be null
       if (!isNullOrEqual(result.key, field.key)) {
         result = field;
         continue;
       }
+
+      // remember the key
+      const key = field.key ?? result.key;
 
       // first rule join to return a field is used and rest of rules are ignored
       const joined = this.reduce<FieldCreate | void>((memo, rule) => {
@@ -125,6 +128,9 @@ export class Schema extends Record(DEFAULTS) {
 
       // set result or use the default joiner
       result = joined != null ? Field.create(joined) : Schema.defaultJoin(this, result, field);
+
+      // ensure the correct key is set
+      if (result.key !== key) result = result.merge({ key });
     }
 
     return this.normalize(result);

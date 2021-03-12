@@ -217,6 +217,31 @@ describe("form-blueprint tests", () => {
     expect(bp1.join(bp2).serialize()).toEqual(result.serialize());
   });
 
+  test("merges null keys", function () {
+    expect.assertions(1);
+
+    const bp1 = createBlueprint({
+      type: "text",
+      label: "Bar1",
+      default: "foobar",
+    });
+
+    const bp2 = createBlueprint({
+      key: "asdf",
+      type: "text",
+      default: "baz",
+    });
+
+    const result = createBlueprint({
+      key: "asdf",
+      type: "text",
+      label: "Bar1",
+      default: "baz",
+    });
+
+    expect(bp1.join(bp2).serialize()).toEqual(result.serialize());
+  });
+
   test("doesn't merge when types don't match", function () {
     expect.assertions(1);
 

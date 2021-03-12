@@ -15,6 +15,11 @@ const listRule: Rule = {
       children: Field.createList([child]),
     });
   },
+  serialize(field) {
+    return field.merge({
+      children: field.children.clear(),
+    });
+  },
   transform(field, value) {
     if (!Array.isArray(value)) return value;
 

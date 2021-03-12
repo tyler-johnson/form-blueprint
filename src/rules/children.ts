@@ -10,6 +10,11 @@ const childrenRule: Rule = {
       children: Field.mergeChildren(this.join.bind(this), field.children),
     });
   },
+  serialize(field) {
+    return field.merge({
+      children: field.children.map((f) => this.serialize(f)),
+    });
+  },
 };
 
 export default childrenRule;

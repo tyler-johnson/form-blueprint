@@ -7,6 +7,7 @@ export interface Rule {
   transform?: (this: Schema, field: Field, value: any) => any;
   normalize?: (this: Schema, field: Field) => FieldCreate;
   join?: (this: Schema, field: Field, merge: Field) => FieldCreate | void;
+  serialize?: (this: Schema, field: Field) => FieldCreate;
 }
 
 export interface SchemaRecord {
@@ -75,13 +76,7 @@ export class Schema extends Record(DEFAULTS) {
   reduce<T>(fn: (memo: T, rule: Rule) => T, initial: T): T;
   reduce<T>(fn: (memo: T | undefined, rule: Rule) => T | undefined, initial?: T): T | undefined;
   reduce<T>(fn: (memo: T | undefined, rule: Rule) => T | undefined, initial?: T) {
-    let memo = initial;
-
-    for (const rule of this.rules) {
-      memo = fn(memo, rule);
-    }
-
-    return memo;
+    return this.rules.reduce((memo, rule) => fn(memo, rule), initial);
   }
 
   normalize(field: Field): Field {
@@ -92,6 +87,18 @@ export class Schema extends Record(DEFAULTS) {
         return memo;
       }
     }, field);
+  }
+
+  serialize(field?: FieldCreate) {
+    const $field = Field.create(field);
+
+    return this.reduce((memo, rule) => {
+      if (rule.serialize && rule.match.call(this, memo)) {
+        return Field.create(rule.serialize.call(this, memo));
+      } else {
+        return memo;
+      }
+    }, $field);
   }
 
   transform(field: Field, value?: any) {
@@ -118,9 +125,9 @@ export class Schema extends Record(DEFAULTS) {
       const key = field.key ?? result.key;
 
       // first rule join to return a field is used and rest of rules are ignored
-      const joined = this.reduce<FieldCreate | void>((memo, rule) => {
+      const joined = this.reduce<FieldCreate>((memo, rule) => {
         if (memo == null && rule.join && rule.match.call(this, result) && rule.match.call(this, field)) {
-          return rule.join.call(this, result, field);
+          return rule.join.call(this, result, field) || undefined;
         } else {
           return memo;
         }

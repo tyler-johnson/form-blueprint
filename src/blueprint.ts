@@ -1,7 +1,7 @@
 import { Record } from "immutable";
 import toPath from "lodash.topath";
 import { Schema, SchemaCreate } from "./schema";
-import { Field, FieldCreate, FieldSerialized } from "./field";
+import { Field, FieldCreate } from "./field";
 
 export interface BlueprintRecord {
   root: Field;
@@ -83,8 +83,8 @@ export class Blueprint extends Record(DEFAULTS) {
   }
 
   /**
-   * Merges blueprints' root fields into this one and returns a new blueprint. Blueprint root fields are merged
-   * left-to-right, with the right-most blueprint replacing data in those left of it. The blueprints schemas are left
+   * Merges blueprints' root fields into this one and returns a new blueprint. Blueprints' root fields are merged
+   * left-to-right, with the right-most blueprint replacing data in those left of it. The blueprints' schemas are left
    * untouched, and the schema of the blueprint that join is called on is used to perform the join.
    */
   join(...blueprints: Blueprint[]) {
@@ -94,10 +94,11 @@ export class Blueprint extends Record(DEFAULTS) {
   }
 
   /**
-   * Generates a plain object representing the blueprint fields. New blueprints can be created from the serialized
-   * result.
+   * Convert this blueprint into an object that can be stringified or passed back to Blueprint.create().
+   *
+   * Internally, this is calling the blueprint's schema's serialize() on the blueprint's root field.
    */
-  serialize(): FieldSerialized {
-    return this.root.serialize();
+  serialize() {
+    return this.schema.serialize(this.root).serialize();
   }
 }

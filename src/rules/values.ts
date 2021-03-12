@@ -45,6 +45,11 @@ const valuesRule: Rule = {
       children: Field.createList(values),
     });
   },
+  serialize(field) {
+    return field.merge({
+      children: field.children.clear(),
+    });
+  },
   join(field, mergeIn) {
     // must match types
     if (!isNullOrEqual(field.type, mergeIn.type)) {

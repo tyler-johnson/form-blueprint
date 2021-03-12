@@ -1,6 +1,8 @@
 import { Record, Map as ImmutableMap, List } from "immutable";
 import { isIterable } from "./utils";
 
+const conflictingSerializeKeys = new Set(["key", "type", "children", "props"]);
+
 export interface FieldRecord {
   key?: string;
   type?: string;
@@ -24,13 +26,6 @@ export interface FieldCreate {
   children?: FieldCreateList;
   props?: FieldCreateProps;
   [key: string]: any;
-}
-
-export interface FieldSerialized {
-  key?: string;
-  type?: string;
-  children?: FieldSerialized[];
-  props?: { [key: string]: any };
 }
 
 export class Field extends Record(DEFAULTS) {
@@ -123,12 +118,33 @@ export class Field extends Record(DEFAULTS) {
     );
   }
 
+  /** Convert this field back into an object that can be stringified or passed back to Field.create(). */
   serialize() {
-    const result: FieldSerialized = {};
+    const result: FieldCreate = {};
+
     if (this.key != null) result.key = this.key;
     if (this.type != null) result.type = this.type;
-    if (this.children.size) result.children = this.children.map((c) => c.serialize()).toArray();
-    if (this.props.size) result.props = this.props.toObject();
+
+    if (this.props.size) {
+      // remove conflicting keys
+      const conflicts = this.props.takeWhile((_, key) => conflictingSerializeKeys.has(key));
+      const props = this.props.takeUntil((_, key) => conflictingSerializeKeys.has(key));
+
+      // apply props in the right place
+      if (conflicts.size) result.props = conflicts.toObject();
+      if (props.size) Object.assign(result, props.toObject());
+    }
+
+    if (this.children.size) {
+      const children = this.children.map((c) => c.serialize()).toArray();
+
+      if (children.some((f) => f.key == null)) {
+        result.children = children;
+      } else {
+        result.children = Object.fromEntries(children.map(({ key, ...child }) => [key, child] as const));
+      }
+    }
+
     return result;
   }
 }

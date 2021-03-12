@@ -47,7 +47,9 @@ const valuesRule: Rule = {
   },
   join(field, mergeIn) {
     // must match types
-    if (!isNullOrEqual(field.type, mergeIn.type)) return;
+    if (!isNullOrEqual(field.type, mergeIn.type)) {
+      return mergeIn;
+    }
 
     return field.merge({
       type: mergeIn.type ?? field.type,

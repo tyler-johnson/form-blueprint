@@ -1,6 +1,4 @@
 breaking:
 features:
-  - Rules can define a `serialize()` method which is used to modify a field before it gets serialized. This works similarly to `normalize()` and can be thought of as the inverse operation to `normalize()`, usually undoing what `normalize()` changed.  `serialize()` should be used to compress the field data for stringification and transfer.
-  - Field.serialize() now returns an object of type `FieldCreate` and not `FieldSerialized`. It will attempt to reduce the field to the smallest form of `FieldCreate` that can still be interpretted correctly. The `FieldSerialized` has been removed.
 fixes:
 chores:

@@ -1,3 +1,16 @@
+## [6.1.0](https://github.com/tyler-johnson/form-blueprint/tree/release/4/) - Mar 12, 2021
+
+### Features
+- Rules can define a `serialize()` method which is used to modify a field before it gets serialized. This works similarly to `normalize()` and can be thought of as the inverse operation to `normalize()`, usually undoing what `normalize()` changed.  `serialize()` should be used to compress the field data for stringification and transfer.
+- Field.serialize() now returns an object of type `FieldCreate` and not `FieldSerialized`. It will attempt to reduce the field to the smallest form of `FieldCreate` that can still be interpretted correctly. The `FieldSerialized` has been removed.
+
+### Commits
+[`5dd1792a..995ea36c`](https://github.com/tyler-johnson/form-blueprint/compare/5dd1792a305461734bd5694f1ff599ffcab187db..995ea36c080af44a8ec537ca620d2840a448ac09)
+- [`995ea36c`](https://github.com/tyler-johnson/form-blueprint/commit/995ea36c080af44a8ec537ca620d2840a448ac09) Merge pull request #21 from tyler-johnson/dev
+- [`9164a3ba`](https://github.com/tyler-johnson/form-blueprint/commit/9164a3ba8eabf8d5eb72d70015d8cc88a6ecd3b6) patch fromEntries
+- [`6b4fc218`](https://github.com/tyler-johnson/form-blueprint/commit/6b4fc21876195bebb54a949acf3bbde9976deed5) better serialization
+
+
 ## [6.0.1](https://github.com/tyler-johnson/form-blueprint/tree/release/3/) - Mar 12, 2021
 
 ### Fixes

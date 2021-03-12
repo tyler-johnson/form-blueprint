@@ -1,5 +1,5 @@
 import { Record, Map as ImmutableMap, List } from "immutable";
-import { isIterable } from "./utils";
+import { fromEntries, isIterable } from "./utils";
 
 const conflictingSerializeKeys = new Set(["key", "type", "children", "props"]);
 
@@ -141,7 +141,7 @@ export class Field extends Record(DEFAULTS) {
       if (children.some((f) => f.key == null)) {
         result.children = children;
       } else {
-        result.children = Object.fromEntries(children.map(({ key, ...child }) => [key, child] as const));
+        result.children = fromEntries(children.map(({ key, ...child }) => [key as string, child] as const));
       }
     }
 

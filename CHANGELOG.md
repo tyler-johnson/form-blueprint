@@ -1,3 +1,14 @@
+## [6.0.1](https://github.com/tyler-johnson/form-blueprint/tree/release/3/) - Mar 12, 2021
+
+### Fixes
+- Properly set field key on joins with null keys.
+
+### Commits
+[`098999ca..1e1ed0a3`](https://github.com/tyler-johnson/form-blueprint/compare/098999ca5df8fbfbdfeebf0cb43d723c7ba566c2..1e1ed0a3cb52078072fe06452cf78a0c5006e240)
+- [`1e1ed0a3`](https://github.com/tyler-johnson/form-blueprint/commit/1e1ed0a3cb52078072fe06452cf78a0c5006e240) Merge pull request #20 from tyler-johnson/dev
+- [`4d500233`](https://github.com/tyler-johnson/form-blueprint/commit/4d50023302457286a3cf767e1c2233cae5650014) fix null key joining
+
+
 ## [6.0.0](https://github.com/tyler-johnson/form-blueprint/tree/release/2/) - Mar 11, 2021
 
 ### Breaking

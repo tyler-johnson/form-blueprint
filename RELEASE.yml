@@ -1,5 +1,4 @@
 breaking:
 features:
 fixes:
-  - Properly set field key on joins with null keys.
 chores:

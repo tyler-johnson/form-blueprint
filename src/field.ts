@@ -93,7 +93,7 @@ export class Field extends Record(DEFAULTS) {
         if (fields == null || !fields.length) continue;
         children.push(mergeFields(...fields));
       } else {
-        children.push(key);
+        children.push(mergeFields(key));
       }
     }
 

@@ -368,6 +368,24 @@ describe("form-blueprint tests", () => {
     });
   });
 
+  test("field with values uses default", () => {
+    const values: {
+      [key: string]: number;
+    } = {
+      a: 1,
+      b: 2,
+      c: 3,
+    };
+
+    const blueprint = createBlueprint({
+      type: "dropdown",
+      values,
+      default: 2,
+    });
+
+    expect(blueprint.transform()).toBe(2);
+  });
+
   test("doesn't merge children on fields with values", () => {
     const bp1 = createBlueprint({ type: "dropdown", values: { foo: "bar" } });
     const bp2 = createBlueprint({ type: "dropdown", values: { hello: "world" } });
@@ -377,5 +395,42 @@ describe("form-blueprint tests", () => {
   test("converts string color value to hex", () => {
     const blueprint = createBlueprint({ type: "color" });
     expect(blueprint.transform("black")).toEqual("#000000");
+  });
+
+  test("list field uses default", () => {
+    const blueprint = createBlueprint({
+      links: {
+        label: "Navbar Links",
+        description: "Add pages and URLs to show in the navbar.",
+        type: "list",
+        order: 20,
+        field: {
+          type: "section",
+          sortBy: "order",
+          options: {
+            linkType: {
+              type: "dropdown",
+              label: "Link Type",
+              order: 1,
+              values: {
+                Page: "page",
+                URL: "url",
+              },
+              default: "page",
+            },
+            pageId: {
+              type: "page",
+              label: "Page",
+              order: 3,
+              visible: {
+                linkType: "page",
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(blueprint.transform({ links: [{}] })).toEqual({ links: [{ linkType: "page" }] });
   });
 });

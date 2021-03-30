@@ -1,5 +1,4 @@
 breaking:
 features:
 fixes:
-- Children fields without keys are properly normalized. This fixed an issue with defaults not applying to list types.
 chores:

@@ -1,3 +1,14 @@
+## [6.1.1](https://github.com/tyler-johnson/form-blueprint/tree/release/5/) - Mar 30, 2021
+
+### Fixes
+- Children fields without keys are properly normalized. This fixed an issue with defaults not applying to list types.
+
+### Commits
+[`bbed36d1..d7f2edc2`](https://github.com/tyler-johnson/form-blueprint/compare/bbed36d13406bd83687c7cec5497440b51c390fe..d7f2edc26254f6107b6d30afc190b6561b5c47d7)
+- [`d7f2edc2`](https://github.com/tyler-johnson/form-blueprint/commit/d7f2edc26254f6107b6d30afc190b6561b5c47d7) Merge pull request #22 from tyler-johnson/dev
+- [`89549faf`](https://github.com/tyler-johnson/form-blueprint/commit/89549fafbf9e551edbc8e8cd9dfa74f846266d00) normalize children without keys
+
+
 ## [6.1.0](https://github.com/tyler-johnson/form-blueprint/tree/release/4/) - Mar 12, 2021
 
 ### Features

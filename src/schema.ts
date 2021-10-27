@@ -2,6 +2,8 @@ import { List, Record } from "immutable";
 import { Field, FieldCreate } from "./field";
 import { isIterable, isNullOrEqual } from "./utils";
 
+const createSymbol = Symbol("schema create");
+
 export interface Rule {
   match: (this: Schema, field: Field) => boolean;
   transform?: (this: Schema, field: Field, value: any) => any;
@@ -45,7 +47,16 @@ export class Schema extends Record(DEFAULTS) {
       ruleList = ruleList.push(resolveRule(rule));
     }
 
-    return new Schema({ rules: ruleList });
+    const schemaProps: SchemaRecord = { rules: ruleList };
+
+    Object.defineProperty(schemaProps, createSymbol, {
+      value: true,
+      writable: false,
+      enumerable: false,
+      configurable: false,
+    });
+
+    return new Schema(schemaProps);
   }
 
   static defaultJoin(schema: Schema, field: Field, mergeIn: Field) {
@@ -73,6 +84,18 @@ export class Schema extends Record(DEFAULTS) {
     return "schema";
   }
 
+  constructor(values?: Iterable<[string, any]> | Partial<SchemaRecord> | undefined) {
+    if (typeof process === "undefined" || process.env.NODE_ENV !== "production") {
+      if (values == null || !(values as any)[createSymbol]) {
+        console.warn(
+          "The Schema constructor was called directly, usually via new Schema(). Use Schema.create() instead."
+        );
+      }
+    }
+
+    super(values);
+  }
+
   reduce<T>(fn: (memo: T, rule: Rule) => T, initial: T): T;
   reduce<T>(fn: (memo: T | undefined, rule: Rule) => T | undefined, initial?: T): T | undefined;
   reduce<T>(fn: (memo: T | undefined, rule: Rule) => T | undefined, initial?: T) {
@@ -80,6 +103,10 @@ export class Schema extends Record(DEFAULTS) {
   }
 
   normalize(field: Field): Field {
+    if (!Field.isField(field)) {
+      throw new Error("Expecting a Field object to use in normalize.");
+    }
+
     return this.reduce((memo, rule) => {
       if (rule.normalize && rule.match.call(this, memo)) {
         return Field.create(rule.normalize.call(this, memo));
@@ -102,6 +129,10 @@ export class Schema extends Record(DEFAULTS) {
   }
 
   transform(field: Field, value?: any) {
+    if (!Field.isField(field)) {
+      throw new Error("Expecting a Field object to use in transform.");
+    }
+
     return this.reduce((memo, rule) => {
       if (rule.transform && rule.match.call(this, field)) {
         return rule.transform.call(this, field, memo);
@@ -112,9 +143,17 @@ export class Schema extends Record(DEFAULTS) {
   }
 
   join(root: Field, ...mergeIn: Field[]) {
+    if (!Field.isField(root)) {
+      throw new Error("Expecting a Field object to use in join.");
+    }
+
     let result = root;
 
     for (const field of mergeIn) {
+      if (!Field.isField(field)) {
+        throw new Error("Expecting a Field object to use in join.");
+      }
+
       // keys must match or be null
       if (!isNullOrEqual(result.key, field.key)) {
         result = field;

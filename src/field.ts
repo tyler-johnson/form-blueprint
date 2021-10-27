@@ -1,6 +1,7 @@
 import { Record, Map as ImmutableMap, List } from "immutable";
 import { fromEntries, isIterable } from "./utils";
 
+const createSymbol = Symbol("field create");
 const conflictingSerializeKeys = new Set(["key", "type", "children", "props"]);
 
 export interface FieldRecord {
@@ -37,12 +38,21 @@ export class Field extends Record(DEFAULTS) {
     const { key, type, version, children, props, ...rest } = field;
     const propMap = ImmutableMap(rest);
 
-    return new Field({
+    const fieldProps: FieldRecord = {
       key: key ?? undefined,
       type: type ?? undefined,
       props: props != null ? propMap.merge(props) : propMap,
       children: Field.createList(children),
+    };
+
+    Object.defineProperty(fieldProps, createSymbol, {
+      value: true,
+      writable: false,
+      enumerable: false,
+      configurable: false,
     });
+
+    return new Field(fieldProps);
   }
 
   static createList(fields?: FieldCreateList) {
@@ -64,12 +74,19 @@ export class Field extends Record(DEFAULTS) {
     return List(list);
   }
 
-  static mergeChildren(mergeFields: (...fields: Field[]) => Field, ...lists: Array<Iterable<Field>>) {
+  static mergeChildren(
+    mergeFields: (...fields: Field[]) => Field,
+    ...lists: Array<Iterable<Field | null | undefined> | Field | null | undefined>
+  ) {
     const ordered: Array<string | Field> = [];
     const childrenMap = new Map<string, Field[]>();
 
-    for (const list of lists) {
+    for (let list of lists) {
+      if (Field.isField(list) || list == null) list = [list];
+
       for (const f of list) {
+        if (!Field.isField(f)) continue;
+
         if (f.key == null) {
           ordered.push(f);
         } else {
@@ -110,6 +127,16 @@ export class Field extends Record(DEFAULTS) {
 
   get kind() {
     return "field";
+  }
+
+  constructor(values?: Iterable<[string, any]> | Partial<FieldRecord> | undefined) {
+    if (typeof process === "undefined" || process.env.NODE_ENV !== "production") {
+      if (values == null || !(values as any)[createSymbol]) {
+        console.warn("The Field constructor was called directly, usually via new Field(). Use Field.create() instead.");
+      }
+    }
+
+    super(values);
   }
 
   findChildByKey(key?: string) {

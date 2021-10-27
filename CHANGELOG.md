@@ -1,3 +1,40 @@
+## [6.1.2](https://github.com/tyler-johnson/form-blueprint/tree/release/6/) - Oct 27, 2021
+
+### Fixes
+- Relaxed mergeChildren() method to account for potentially undefined values.
+- Warn anytime a constructor is used instead of the create() method.
+- Corrected default empty blueprint contents.
+
+### Dependencies
+- @types/color: `^3.0.1` → `^3.0.2`
+- immutable: `^4.0.0-rc.12` → `^4.0.0`
+- tslib: `^2.1.0` → `^2.3.1`
+- @babel/core: `^7.13.10` → `^7.15.8`
+- @babel/eslint-parser: `^7.13.10` → `^7.15.8`
+- @pagedip/tool-autorelease: `^3.9.2` → `^3.9.7`
+- @types/jest: `^26.0.20` → `^27.0.2`
+- @types/node: `^14.14.33` → `^16.11.6`
+- @typescript-eslint/eslint-plugin: `^4.17.0` → `^5.2.0`
+- @typescript-eslint/parser: `^4.17.0` → `^5.2.0`
+- eslint: `^7.21.0` → `^8.1.0`
+- eslint-config-prettier: `^8.1.0` → `^8.3.0`
+- eslint-plugin-no-unsanitized: `^3.1.4` → `^3.2.0`
+- eslint-plugin-prettier: `^3.3.1` → `^4.0.0`
+- jest: `^26.6.3` → `^27.3.1`
+- npm-run-all: `^4.1.1` → `^4.1.5`
+- prettier: `^2.2.1` → `^2.4.1`
+- ts-jest: `^26.5.3` → `^27.0.7`
+- typedoc: `^0.20.30` → `^0.22.7`
+- typescript: `^4.2.3` → `^4.4.4`
+
+### Commits
+[`86889ca1..3db3d662`](https://github.com/tyler-johnson/form-blueprint/compare/86889ca1508f7a4cf17e5c29947b0b51a425005c..3db3d66238237c435bd0dc1fbb1e3a89d0f64b02)
+- [`3db3d662`](https://github.com/tyler-johnson/form-blueprint/commit/3db3d66238237c435bd0dc1fbb1e3a89d0f64b02) Merge pull request #24 from tyler-johnson/dev
+- [`a915fa78`](https://github.com/tyler-johnson/form-blueprint/commit/a915fa7815b2be36fe994f0fc30d7755e63f2a84) update node in travis config
+- [`f4a88003`](https://github.com/tyler-johnson/form-blueprint/commit/f4a880034423e1b74116a94c0d616fcabe8e7ad3) update deps
+- [`7338dc7e`](https://github.com/tyler-johnson/form-blueprint/commit/7338dc7ef11de031c10c05a7687f18f00d1d89d6) warn when using constructors and relax mergeChildren
+
+
 ## [6.1.1](https://github.com/tyler-johnson/form-blueprint/tree/release/5/) - Mar 30, 2021
 
 ### Fixes

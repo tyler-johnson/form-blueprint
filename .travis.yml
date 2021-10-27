@@ -2,7 +2,7 @@ os: linux
 dist: xenial
 language: node_js
 node_js:
-  - 12
+  - 14
 env:
   - NODE_ENV=development
 before_install:
@@ -22,12 +22,9 @@ stages:
 jobs:
   include:
     - stage: test
+      node_js: 12
       script: yarn test
     - stage: test
-      node_js: 10
-      script: yarn test
-    - stage: test
-      node_js: 14
       script: yarn test
     - stage: release
       script: npm run autorelease -- --expanded

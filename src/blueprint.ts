@@ -3,14 +3,16 @@ import toPath from "lodash.topath";
 import { Schema, SchemaCreate } from "./schema";
 import { Field, FieldCreate } from "./field";
 
+const createSymbol = Symbol("blueprint create");
+
 export interface BlueprintRecord {
   root: Field;
   schema: Schema;
 }
 
-const DEFAULTS = {
-  root: new Field(),
-  schema: new Schema(),
+const DEFAULTS: BlueprintRecord = {
+  root: Field.create(),
+  schema: Schema.create(),
 };
 
 export interface BlueprintCreate {
@@ -28,10 +30,19 @@ export class Blueprint extends Record(DEFAULTS) {
       return props;
     }
 
-    const blueprint = new Blueprint({
+    const blueprintProps: BlueprintRecord = {
       root: Field.create(props?.root),
       schema: Schema.create(props?.schema),
+    };
+
+    Object.defineProperty(blueprintProps, createSymbol, {
+      value: true,
+      writable: false,
+      enumerable: false,
+      configurable: false,
     });
+
+    const blueprint = new Blueprint(blueprintProps);
 
     return blueprint.normalize();
   }
@@ -46,6 +57,18 @@ export class Blueprint extends Record(DEFAULTS) {
 
   get kind() {
     return "blueprint";
+  }
+
+  constructor(values?: Iterable<[string, any]> | Partial<BlueprintRecord> | undefined) {
+    if (typeof process === "undefined" || process.env.NODE_ENV !== "production") {
+      if (values == null || !(values as any)[createSymbol]) {
+        console.warn(
+          "The Blueprint constructor was called directly, usually via new Blueprint(). Use Blueprint.create() instead."
+        );
+      }
+    }
+
+    super(values);
   }
 
   /**

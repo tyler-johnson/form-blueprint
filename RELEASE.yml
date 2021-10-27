@@ -1,4 +1,7 @@
 breaking:
 features:
 fixes:
+- Relaxed mergeChildren() method to account for potentially undefined values.
+- Warn anytime a constructor is used instead of the create() method.
+- Corrected default empty blueprint contents.
 chores:
